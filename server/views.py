@@ -11,13 +11,15 @@ from .filters import *
 
 class MyCustomPagination(PageNumberPagination):
     def get_paginated_response(self, data):
-        print(self.page_size)
+
         return Response({
             'links': {
                 'next': self.get_next_link(),
                 'previous': self.get_previous_link()
             },
             'count': self.page.paginator.count,
+            'page': self.page.number,
+            # 'pages': ,
             'limit': self.page_size,
             'results': data
         })
