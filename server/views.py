@@ -10,8 +10,9 @@ from .filters import *
 
 
 class MyCustomPagination(PageNumberPagination):
-    def get_paginated_response(self, data):
+    page_size_query_param = 'limit'
 
+    def get_paginated_response(self, data):
         return Response({
             # 'links': {
             #     'next': self.get_next_link(),
@@ -20,7 +21,7 @@ class MyCustomPagination(PageNumberPagination):
             'total': self.page.paginator.count,
             'page': self.page.number,
             # 'pages': ,
-            'limit': self.page_size,
+            'limit': self.get_page_size(self.request),
             'results': data
         })
 
@@ -30,6 +31,7 @@ class ProductListView(generics.ListAPIView):
     serializer_class = ProductSerializer
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_class = ProductFilter
+    queryset = Product.objects
     pagination_class = MyCustomPagination
 
 
@@ -53,22 +55,3 @@ class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ProductSerializer
     lookup_field = 'pk'
 
-
-class ColorListView(generics.ListAPIView):
-    queryset = Color.objects.all()
-    serializer_class = ColorSerializer
-
-
-class CategoryListView(generics.ListAPIView):
-    queryset = Category.objects.all()
-    serializer_class = CategorySerializer
-
-
-class TypesListView(generics.ListAPIView):
-    queryset = Types.objects.all()
-    serializer_class = TypesSerializer
-
-
-class SizeListView(generics.ListAPIView):
-    queryset = Types.objects.all()
-    serializer_class = SizeSerializer
