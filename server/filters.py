@@ -1,15 +1,18 @@
 import django_filters
 from .models import *
+from django_filters.rest_framework.filters import OrderingFilter
+import rest_framework
 
 
-class ProductFilter(django_filters.FilterSet, django_filters.OrderingFilter):
+class ProductFilter(django_filters.FilterSet):
     title = django_filters.CharFilter(lookup_expr='istartswith')
     price = django_filters.NumberFilter()
     price_from = django_filters.NumberFilter(field_name='price', lookup_expr='gt')
     price__to = django_filters.NumberFilter(field_name='price', lookup_expr='lt')
-    ordering = django_filters.OrderingFilter(fields=('price', 'likes'))
+    # ordering = OrderingFilter(fields=('price', 'likes'))
 
     class Meta:
         model = Product
-        fields = ['title', 'types', 'size', 'category', 'price', 'ordering']
+        ordering = ['id']
+        fields = ['title', 'types', 'size', 'category', 'price']
 

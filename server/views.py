@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django_filters import rest_framework as filters
-from rest_framework import generics
+from rest_framework import generics, filters as fr
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 from .models import *
@@ -29,8 +29,9 @@ class MyCustomPagination(PageNumberPagination):
 class ProductListView(generics.ListAPIView):
     queryset = Product.objects.select_related('category', 'color', 'types', 'size').all()
     serializer_class = ProductSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
+    filter_backends = (filters.DjangoFilterBackend, fr.OrderingFilter)
     filterset_class = ProductFilter
+    ordering_fields = ['price', 'likes']
     queryset = Product.objects
     pagination_class = MyCustomPagination
 
