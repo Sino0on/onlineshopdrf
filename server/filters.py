@@ -8,7 +8,7 @@ class ProductFilter(django_filters.FilterSet):
     title = django_filters.CharFilter(lookup_expr='istartswith')
     price = django_filters.NumberFilter()
     price_from = django_filters.NumberFilter(field_name='price', lookup_expr='gt')
-    price__to = django_filters.NumberFilter(field_name='price', lookup_expr='lt')
+    price_to = django_filters.NumberFilter(field_name='price', lookup_expr='lt')
     # ordering = OrderingFilter(fields=('price', 'likes'))
 
     class Meta:
