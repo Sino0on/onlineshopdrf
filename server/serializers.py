@@ -26,3 +26,22 @@ class UserSerializer(serializers.ModelSerializer):
         user.save()
 
         return user
+
+
+class UpdateUserSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(required=False)
+    first_name = serializers.CharField(required=False)
+    last_name = serializers.CharField(required=False)
+    username = serializers.CharField(required=False)
+
+    class Meta:
+        model = User
+        fields = ('username', 'first_name', 'last_name', 'email')
+
+    def update(self, instance, validated_data):
+        user = self.context['request'].user
+
+        if user.pk != instance.pk:
+            raise serializers.ValidationError({"authorize": "You dont have permission for this user."})
+        print(user)
+        return super().update(instance, validated_data)
