@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django_filters import rest_framework as filters
-from rest_framework import generics, filters as fr
+from rest_framework import generics, filters as fr, status
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 from rest_framework_simplejwt.authentication import JWTAuthentication
@@ -11,6 +11,7 @@ from .filters import *
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework.views import APIView
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 
 class MyCustomPagination(PageNumberPagination):
@@ -38,7 +39,6 @@ class ProductListView(generics.ListAPIView):
     ordering_fields = ['price', 'likes']
     queryset = Product.objects
     pagination_class = MyCustomPagination
-
 
     # def list(self, request, *args, **kwargs):
     #     queryset = self.get_queryset()
@@ -87,3 +87,12 @@ class LikeUserView(APIView):
             return Response('Add Success')
 
 
+class NewAuthView(TokenObtainPairView):
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            # print(serializer.validated_data)
+            user = User.objects.get(username=request.data['username'])
+            serializer.validated_data['user'] = UserSerializer(user).data
+
+        return Response(serializer.validated_data, status=status.HTTP_200_OK)

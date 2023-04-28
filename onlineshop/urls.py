@@ -30,7 +30,6 @@ urlpatterns = [
     path('api_schema', get_schema_view(title='API Schema', description='Guide for drf'), name='api_schema'),
     path('admin/', admin.site.urls),
     path('api/v1/', include('server.urls')),
-    path('api/v1/auth/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
     path('swagger-ui/', TemplateView.as_view(
