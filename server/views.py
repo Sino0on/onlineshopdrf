@@ -72,7 +72,7 @@ class UserUpdateView(generics.UpdateAPIView):
     serializer_class = UpdateUserSerializer
 
 
-class LikeUserView(APIView):
+class LikeUserView(generics.GenericAPIView):
     authentication_classes = (JWTAuthentication, )
     permission_classes = [IsAuthenticated]
 
@@ -81,7 +81,7 @@ class LikeUserView(APIView):
         product = Product.objects.get(id=kwargs['pk'])
         if self.request.user in product.likes.all():
             product.likes.remove(self.request.user)
-            return Response('Remove Success')
+            return Response('Remove Success', status=status.HTTP_200_OK)
         else:
             product.likes.add(self.request.user)
             return Response('Add Success')
@@ -96,3 +96,24 @@ class NewAuthView(TokenObtainPairView):
             serializer.validated_data['user'] = UserSerializer(user).data
 
         return Response(serializer.validated_data, status=status.HTTP_200_OK)
+
+
+class ProductListCreateView(generics.GenericAPIView):
+    serializer_class = ListProductSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            for i in serializer.validated_data['das']:
+                print(i)
+                p = Product.objects.create(
+                    title=i['title'],
+                    price=i['price'],
+                    image=i['image'],
+                    size=i['size'],
+                    category=i['category'],
+                    types=i['types'],
+                    color=i['color'],
+                )
+                p.save()
+            return Response('Dastan', status=status.HTTP_200_OK)

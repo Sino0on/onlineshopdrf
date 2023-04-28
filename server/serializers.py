@@ -49,3 +49,12 @@ class UpdateUserSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({"authorize": "You dont have permission for this user."})
         print(user)
         return super().update(instance, validated_data)
+
+
+class ListProductSerializer(serializers.Serializer):
+    goods = serializers.JSONField()
+
+    def create(self, validated_data):
+        for i in validated_data['das']:
+            print(i)
+        return {'Привет': 'Привет'}
