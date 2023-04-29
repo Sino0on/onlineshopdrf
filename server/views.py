@@ -12,7 +12,8 @@ from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
-from rest_framework_simplejwt.serializers import TokenObtainSerializer
+from rest_framework_simplejwt.serializers import TokenObtainSerializer, TokenObtainPairSerializer
+from rest_framework_simplejwt.tokens import AccessToken
 
 
 class MyCustomPagination(PageNumberPagination):
@@ -64,6 +65,35 @@ class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
 class UserCreateView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            user = User.objects.create(
+                username=serializer.validated_data['username'],
+                first_name=serializer.validated_data['first_name'],
+                last_name=serializer.validated_data['last_name'],
+                gender=serializer.validated_data['gender'],
+                date_of_birth=serializer.validated_data['date_of_birth'],
+                email=serializer.validated_data['email'],
+                mailings=serializer.validated_data['mailings'],
+            )
+            user.set_password(serializer.validated_data['password'])
+            das = user.save()
+            token = TokenObtainPairSerializer.get_token(user)
+            data = {}
+            data["refresh"] = str(token)
+            data["access"] = str(token.access_token)
+            data["user"] = UserSerializer(user)
+            print(data)
+            # das = TokenObtainSerializer(data={
+            #     'username': serializer.validated_data['username'],
+            #     'password': serializer.validated_data['password']
+            # })
+            # if das.is_valid():
+            #     print(das.validated_data)
+            return Response(f'{data}', status=status.HTTP_200_OK)
+        pass
 
 
 class UserUpdateView(generics.UpdateAPIView):
