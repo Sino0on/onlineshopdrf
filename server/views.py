@@ -12,6 +12,7 @@ from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.serializers import TokenObtainSerializer
 
 
 class MyCustomPagination(PageNumberPagination):
@@ -32,12 +33,11 @@ class MyCustomPagination(PageNumberPagination):
 
 
 class ProductListView(generics.ListAPIView):
-    queryset = Product.objects.select_related('category', 'color', 'types', 'size').all()
+    queryset = Product.objects.all()
     serializer_class = ProductSerializer
     filter_backends = (filters.DjangoFilterBackend, fr.OrderingFilter)
     filterset_class = ProductFilter
     ordering_fields = ['price', 'likes']
-    queryset = Product.objects
     pagination_class = MyCustomPagination
 
     # def list(self, request, *args, **kwargs):
