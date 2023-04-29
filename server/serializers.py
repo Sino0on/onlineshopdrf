@@ -55,6 +55,6 @@ class ListProductSerializer(serializers.Serializer):
     goods = serializers.JSONField()
 
     def create(self, validated_data):
-        for i in validated_data['das']:
+        for i in validated_data['goods']:
             print(i)
         return {'Привет': 'Привет'}
