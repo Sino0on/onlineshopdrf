@@ -10,6 +10,8 @@ from .filters import *
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework.views import APIView
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenObtainSerializer, TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import AccessToken
@@ -76,7 +78,10 @@ class UserCreateView(generics.CreateAPIView):
                 mailings=serializer.validated_data['mailings'],
             )
             user.set_password(serializer.validated_data['password'])
-
+            try:
+                validate_password(serializer.validated_data['password'], user)
+            except ValidationError as e:
+                return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
             das = user.save()
             token = TokenObtainPairSerializer()
             token = token.validate({'username': user.username, 'password': serializer.validated_data['password']})
@@ -91,7 +96,7 @@ class UserCreateView(generics.CreateAPIView):
             return Response(token, status=status.HTTP_200_OK)
         errors = serializer.errors
         print(errors)
-        return Response(errors, status=status.HTTP_404_NOT_FOUND)
+        return Response(errors, status=status.HTTP_403_FORBIDDEN)
 
 
 class UserUpdateView(generics.UpdateAPIView):
