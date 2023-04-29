@@ -76,6 +76,7 @@ class UserCreateView(generics.CreateAPIView):
                 mailings=serializer.validated_data['mailings'],
             )
             user.set_password(serializer.validated_data['password'])
+
             das = user.save()
             token = TokenObtainPairSerializer()
             token = token.validate({'username': user.username, 'password': serializer.validated_data['password']})
@@ -88,7 +89,9 @@ class UserCreateView(generics.CreateAPIView):
             # if das.is_valid():
             #     print(das.validated_data)
             return Response(token, status=status.HTTP_200_OK)
-        return Response('das', status=status.HTTP_404_NOT_FOUND)
+        errors = serializer.errors
+        print(errors)
+        return Response(errors, status=status.HTTP_404_NOT_FOUND)
 
 
 class UserUpdateView(generics.UpdateAPIView):
