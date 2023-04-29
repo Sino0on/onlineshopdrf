@@ -18,6 +18,11 @@ class UserSerializer(serializers.ModelSerializer):
             date = validated_data['date_of_birth']
         except:
             date = None
+        try:
+            gender = validated_data['gender']
+        except:
+            gender = None
+
         user = User.objects.create(
             username=validated_data['username'],
             email=validated_data['email'],
@@ -25,7 +30,7 @@ class UserSerializer(serializers.ModelSerializer):
             last_name=validated_data['last_name'],
             mailings=validated_data['mailings'],
             date_of_birth=None,
-            gender=validated_data['gender']
+            gender=gender
         )
 
         user.set_password(validated_data['password'])
