@@ -14,13 +14,17 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['username', 'first_name', 'last_name', 'email', 'password', 'mailings', 'date_of_birth', 'gender']
 
     def create(self, validated_data):
+        try:
+            date = validated_data['date_of_birth']
+        except:
+            date = None
         user = User.objects.create(
             username=validated_data['username'],
             email=validated_data['email'],
             first_name=validated_data['first_name'],
             last_name=validated_data['last_name'],
             mailings=validated_data['mailings'],
-            date_of_birth=validated_data['date_of_birth'],
+            date_of_birth=None,
             gender=validated_data['gender']
         )
 
