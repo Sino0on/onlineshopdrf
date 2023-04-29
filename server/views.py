@@ -1,7 +1,6 @@
 from django.shortcuts import render
 from django_filters import rest_framework as filters
 from rest_framework import generics, filters as fr, status
-from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from .models import *
@@ -80,20 +79,18 @@ class UserCreateView(generics.CreateAPIView):
             )
             user.set_password(serializer.validated_data['password'])
             das = user.save()
-            token = TokenObtainPairSerializer.get_token(user)
-            data = {}
-            data["refresh"] = str(token)
-            data["access"] = str(token.access_token)
-            data["user"] = UserSerializer(user)
-            print(data)
+            token = TokenObtainPairSerializer()
+            token = token.validate({'username': user.username, 'password': serializer.validated_data['password']})
+            # print(token)
+            token["user"] = UserSerializer(user).data
             # das = TokenObtainSerializer(data={
             #     'username': serializer.validated_data['username'],
             #     'password': serializer.validated_data['password']
             # })
             # if das.is_valid():
             #     print(das.validated_data)
-            return Response(f'{data}', status=status.HTTP_200_OK)
-        pass
+            return Response(token, status=status.HTTP_200_OK)
+        return Response('das', status=status.HTTP_404_NOT_FOUND)
 
 
 class UserUpdateView(generics.UpdateAPIView):
