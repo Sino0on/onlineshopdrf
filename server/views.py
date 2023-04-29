@@ -104,7 +104,7 @@ class ProductListCreateView(generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
-            for i in serializer.validated_data['das']:
+            for i in serializer.validated_data['goods']:
                 print(i)
                 p = Product.objects.create(
                     title=i['title'],
