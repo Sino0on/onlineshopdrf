@@ -33,7 +33,7 @@ class MyCustomPagination(PageNumberPagination):
 
 
 class ProductListView(generics.ListAPIView):
-    queryset = Product.objects.all()
+    queryset = Product.objects.all().distinct()
     serializer_class = ProductSerializer
     filter_backends = (filters.DjangoFilterBackend, fr.OrderingFilter)
     filterset_class = ProductFilter
