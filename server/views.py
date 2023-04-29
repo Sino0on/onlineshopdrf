@@ -72,8 +72,6 @@ class UserCreateView(generics.CreateAPIView):
                 username=serializer.validated_data['username'],
                 first_name=serializer.validated_data['first_name'],
                 last_name=serializer.validated_data['last_name'],
-                gender=serializer.validated_data['gender'],
-                date_of_birth=serializer.validated_data['date_of_birth'],
                 email=serializer.validated_data['email'],
                 mailings=serializer.validated_data['mailings'],
             )
