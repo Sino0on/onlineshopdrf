@@ -42,6 +42,10 @@ class ProductListView(generics.ListAPIView):
     ordering_fields = ['price', 'likes']
     pagination_class = MyCustomPagination
 
+    def get_queryset(self):
+        query_set = super().get_queryset().distinct()
+        return query_set.distinct()
+
     # def list(self, request, *args, **kwargs):
     #     queryset = self.get_queryset()
     #     print(len(queryset.all()))
