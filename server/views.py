@@ -1,8 +1,12 @@
+from django.conf import settings
 from django.shortcuts import render
 from django_filters import rest_framework as filters
 from rest_framework import generics, filters as fr, status
 from rest_framework.pagination import PageNumberPagination
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework_simplejwt.settings import api_settings
+from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken
+
 from .models import *
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from .serializers import *
@@ -12,9 +16,11 @@ from rest_framework.authtoken.models import Token
 from rest_framework.views import APIView
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
-from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenVerifyView
 from rest_framework_simplejwt.serializers import TokenObtainSerializer, TokenObtainPairSerializer
-from rest_framework_simplejwt.tokens import AccessToken
+from rest_framework_simplejwt.tokens import AccessToken, UntypedToken
+from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
+from rest_framework_simplejwt.serializers import TokenVerifySerializer
 
 
 class MyCustomPagination(PageNumberPagination):
@@ -154,3 +160,33 @@ class ProductListCreateView(generics.GenericAPIView):
                 )
                 p.save()
             return Response('Dastan', status=status.HTTP_200_OK)
+
+
+class TokenVerifyCustomSerializer(TokenVerifySerializer):
+    def validate(self, attrs):
+        token = UntypedToken(attrs["token"])
+
+        if (
+            api_settings.BLACKLIST_AFTER_ROTATION
+            and "rest_framework_simplejwt.token_blacklist" in settings.INSTALLED_APPS
+        ):
+            jti = token.get(api_settings.JTI_CLAIM)
+            if BlacklistedToken.objects.filter(token__jti=jti).exists():
+                raise ValidationError("Token is blacklisted")
+
+        return {"detail": "Токен действителен", "code": "token_valid"}
+
+
+class TokenVerifyCustomView(TokenVerifyView):
+    serializer_class = TokenVerifyCustomSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+
+        try:
+            serializer.is_valid(raise_exception=True)
+        except TokenError as e:
+            raise InvalidToken(e.args[0])
+
+        return Response(serializer.validated_data, status=status.HTTP_200_OK)
+

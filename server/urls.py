@@ -10,4 +10,5 @@ urlpatterns = [
     path('like/<int:pk>', LikeUserView.as_view()),
     path('goodlistcreate/', ProductListCreateView.as_view()),
     path('auth/', NewAuthView.as_view(), name='token_obtain_pair'),
+    path('token/verify/', TokenVerifyCustomView.as_view()),
 ]
