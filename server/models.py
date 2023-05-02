@@ -31,3 +31,34 @@ class Product(models.Model):
         ordering = ['id']
         verbose_name = 'Продукт'
         verbose_name_plural = 'Продукты'
+
+
+class Order(models.Model):
+    is_delivery = models.BooleanField()
+    email = models.EmailField()
+    address = models.CharField(max_length=255)
+    city = models.CharField(max_length=255)
+    phone_number = models.IntegerField()
+    full_name = models.CharField(blank=True, null=True, max_length=223)
+    pay_with_card = models.BooleanField()
+    gift = models.BooleanField(default=False)
+    goods = models.ManyToManyField('OrderProduct')
+    created_date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'Order - {self.id}'
+
+    class Meta:
+        verbose_name = 'Заказ'
+        verbose_name_plural = 'Заказы'
+        ordering = ['-created_date']
+
+
+class OrderProduct(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField()
+
+    def __str__(self):
+        return f'PreOrder {self.product}'
+
+

@@ -67,3 +67,52 @@ class ListProductSerializer(serializers.Serializer):
         for i in validated_data['goods']:
             print(i)
         return {'Привет': 'Привет'}
+
+
+class OrderProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OrderProduct
+        fields = '__all__'
+
+
+class OrderCreateSerializer(serializers.ModelSerializer):
+    goods = serializers.JSONField()
+
+    def create(self, validated_data):
+        products = []
+        for i in validated_data['goods']:
+            product = Product.objects.get(id=int(i['product']))
+            order = OrderProduct.objects.create(product=product, quantity=i['quantity'])
+            order.save()
+            products.append(order)
+
+
+        print(validated_data)
+        order = Order.objects.create(
+            is_delivery=validated_data['is_delivery'],
+            email=validated_data['email'],
+            address=validated_data['address'],
+            city=validated_data['city'],
+            phone_number=validated_data['phone_number'],
+            full_name=validated_data['full_name'],
+            pay_with_card=validated_data['pay_with_card'],
+            gift=validated_data['gift'],
+        )
+        for i in products:
+            order.goods.add(i)
+        order.save()
+        return order
+
+    class Meta:
+        model = Order
+        fields = [
+            'is_delivery',
+            'email',
+            'address',
+            'city',
+            'phone_number',
+            'goods',
+            'full_name',
+            'pay_with_card',
+            'gift'
+        ]

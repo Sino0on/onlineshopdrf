@@ -190,3 +190,16 @@ class TokenVerifyCustomView(TokenVerifyView):
 
         return Response(serializer.validated_data, status=status.HTTP_200_OK)
 
+
+class OrderCreateView(generics.CreateAPIView):
+    serializer_class = OrderCreateSerializer
+    queryset = Order.objects.all()
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid()
+
+        print(serializer.create(serializer.validated_data))
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
