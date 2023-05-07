@@ -13,4 +13,6 @@ urlpatterns = [
     path('token/verify/', TokenVerifyCustomView.as_view()),
     path('order/create/', OrderCreateView.as_view()),
     path('orders/', OrderListView.as_view()),
+    path('user/change_password/', ChangePasswordView.as_view()),
 ]
+

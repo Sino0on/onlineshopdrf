@@ -207,3 +207,9 @@ class OrderListView(generics.ListAPIView):
     pagination_class = MyCustomPagination
     serializer_class = OrderListSerializer
     queryset = Order.objects.all()
+
+
+class ChangePasswordView(generics.UpdateAPIView):
+    queryset = User.objects.all()
+    permission_classes = (IsAuthenticated,)
+    serializer_class = ChangePasswordSerializer
