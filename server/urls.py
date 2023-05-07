@@ -12,4 +12,5 @@ urlpatterns = [
     path('auth/', NewAuthView.as_view(), name='token_obtain_pair'),
     path('token/verify/', TokenVerifyCustomView.as_view()),
     path('order/create/', OrderCreateView.as_view()),
+    path('orders/', OrderListView.as_view()),
 ]

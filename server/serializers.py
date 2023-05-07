@@ -3,9 +3,14 @@ from .models import *
 
 
 class ProductSerializer(serializers.ModelSerializer):
+    is_like = serializers.SerializerMethodField('is_like_func')
+
+    def is_like_func(self, obj):
+        return True if self.context['request'].user in obj.likes.all() else False
+
     class Meta:
         model = Product
-        fields = '__all__'
+        exclude = ('likes', )
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -85,8 +90,6 @@ class OrderCreateSerializer(serializers.ModelSerializer):
             order = OrderProduct.objects.create(product=product, quantity=i['quantity'])
             order.save()
             products.append(order)
-
-
         print(validated_data)
         order = Order.objects.create(
             is_delivery=validated_data['is_delivery'],
@@ -116,3 +119,19 @@ class OrderCreateSerializer(serializers.ModelSerializer):
             'pay_with_card',
             'gift'
         ]
+
+
+class OrderProductListSerializer(serializers.ModelSerializer):
+    product = ProductSerializer()
+
+    class Meta:
+        model = OrderProduct
+        fields = '__all__'
+
+
+class OrderListSerializer(serializers.ModelSerializer):
+    goods = OrderProductListSerializer(many=True)
+
+    class Meta:
+        model = Order
+        fields = '__all__'

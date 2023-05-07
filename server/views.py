@@ -203,3 +203,7 @@ class OrderCreateView(generics.CreateAPIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
+class OrderListView(generics.ListAPIView):
+    pagination_class = MyCustomPagination
+    serializer_class = OrderListSerializer
+    queryset = Order.objects.all()
